@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <title>Об Организации</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
@@ -15,29 +15,25 @@
     <nav class="nav-bar">
         <ul class="nav-ul">
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('categories')}}">Категории</a>
+                <a class="nav-a" href="{{url_for('index')}}">Главная</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('products')}}">Товары</a>
+                <a class="nav-a" href="{{url_for('about')}}">О Нас / связаться с нами</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('orders')}}">Заказы</a>
+                <a class="nav-a" href="{{url_for('delivery')}}">Доставка</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('users')}}">Пользователи</a>
-            </li>
-            <li class="nav-li">
-                <a class="nav-a" href="{{url_for('add_items')}}">Добавление новых данных</a>
+                <a class="nav-a" href="{{url_for('cart')}}">Корзина</a>
             </li>
         </ul>
     </nav>
 </div>
+
+
 <main>
-    <h1>Страница не найдена</h1>
-    <p>К сожалению Вы как-то зашли на страницу, которой не существует.</p>
-    <p>Просим вернуться на страницу Категорий и выбирать из предложенного списка категорий и товаров!</p>
-    <p><span class="highlight">Спасибо :)</span>.</p>
-    <a class="highlight" href="{{url_for('categories')}}">Страница категорий</a>
+{% block main %}
+{% endblock %}
 </main>
 
 

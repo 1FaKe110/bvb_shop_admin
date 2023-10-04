@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Об Организации</title>
+    <title>Произошла ошибка</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
@@ -32,8 +32,11 @@
 
 
 <main>
-{% block main %}
-{% endblock %}
+    <h1>Произошла ошибка</h1>
+    <p>К сожалению произошла непредвиденная ошибка. Мы уже работаем над этим</p>
+    <p>Просим вернуться на главную страницу</p>
+    <p><span class="highlight">Спасибо :)</span>.</p>
+    <a class="highlight" href="{{url_for('index')}}">Главная страница</a>
 </main>
 
 
