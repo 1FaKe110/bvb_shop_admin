@@ -240,7 +240,7 @@ def order(order_id):
         f"where order_id = {order_id}",
         'fetchone')
 
-    if not len(order_obj):
+    if order_obj is None or not len(order_obj):
         return redirect(url_for('orders'))
 
     order_obj.datetime = order_obj.datetime[:10]
