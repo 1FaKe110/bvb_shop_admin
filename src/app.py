@@ -11,10 +11,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from background import Tasks
 from munch import DefaultMunch
 
-from dotenv import load_dotenv
-
-load_dotenv('./config/settings.env')
-
 Tasks.update_dollar_course()
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)

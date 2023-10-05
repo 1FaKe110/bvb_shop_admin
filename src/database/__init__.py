@@ -5,9 +5,6 @@ import psycopg2
 from psycopg2 import extras
 import os
 from munch import DefaultMunch
-
-from dotenv import load_dotenv
-load_dotenv('./config/settings.env')
 as_class = DefaultMunch.fromDict
 
 
