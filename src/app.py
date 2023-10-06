@@ -147,6 +147,7 @@ def products():
                            dollar=dollar)
 
 
+
 @app.route('/products/<product_id>/delete', methods=['DELETE'])
 def products_delete(product_id):
     if 'username' not in session:
