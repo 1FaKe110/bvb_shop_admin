@@ -28,7 +28,7 @@ def login():
         _login = request.form['username']
         password = request.form["password"]
 
-        user_info = db.exec(f"Select login, password, is_admin "
+        user_info = db.exec(f"Select phone, password, is_admin "
                             f"from users "
                             f"where login = '{_login}'", "fetchone")
 
@@ -215,28 +215,23 @@ def orders():
 
 
 @logger.catch
-@app.route('/order/<int:order_id>', methods=['GET', 'POST'])
+@app.route('/order/<int:order_id>', methods=['GET'])
 def order(order_id):
 
     if 'username' not in session:
         return redirect(url_for('login'))
-
-    match request.method:
-        case 'POST':
-            form = as_class(request.form.to_dict())
-            logger.debug(json.dumps(form.__dict__, indent=2, ensure_ascii=False))
-            logger.debug('Меняем что-то в заказах')
 
     order_obj = db.exec(
         "Select distinct(order_id), "
         "status_id, address, "
         "cast(datetime as text), "
         "ose.id as status_id, "
-        "ose.name as status_name, u.username, "
-        "u.phone, u.email "
+        "ose.name as status_name, "
+        "u.phone, "
+        "u.email "
         "from orders o "
         "inner join order_status ose on ose.id = o.status_id "
-        "inner join users u on o.user_id = u.id "
+        "inner join users_new u on o.user_id = u.id "
         f"where order_id = {order_id}",
         'fetchone')
 
