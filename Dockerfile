@@ -15,5 +15,8 @@ ENV secret_docker_key='dckr_pat_PmrJFIEOttyPiEZXDx9yIc6Xpuo'
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+CMD apt install netstat
+CMD netstat -tuln
+
 EXPOSE 1112
 CMD ["python3", "-u", "app.py"]

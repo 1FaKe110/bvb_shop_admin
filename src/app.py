@@ -504,9 +504,11 @@ def main():
     scheduler.add_job(Tasks.update_dollar_course, 'interval', hours=24)
     scheduler.start()
     try:
-        app.run(host='172.17.0.3', port=1112, debug=True)
+        app.run(host='0.0.0.0', port=1112, debug=True)
     except KeyboardInterrupt:
         pass
+    except Exception as ex:
+        logger.error(ex)
     finally:
         logger.debug("scheduler: shutdown")
         scheduler.shutdown()
