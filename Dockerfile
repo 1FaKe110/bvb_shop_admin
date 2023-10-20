@@ -11,6 +11,7 @@ ENV db_name=bvb_shop
 ENV db_username=gen_user
 ENV db_password=bvb_admin
 ENV secret_key='eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9'
+ENV secret_docker_key='dckr_pat_PmrJFIEOttyPiEZXDx9yIc6Xpuo'
 
 RUN pip install --no-cache-dir -r requirements.txt
 
