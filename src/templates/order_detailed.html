@@ -44,15 +44,17 @@
                         <h3>Категория: <a href="{{ url_for('orders')}}">Заказы</a> / id: {{ order.order_id }}</h3>
                     </div>
                 </div>
+                {% if order.status_id in [1, 2] %}
                 <div class="order_info">
                     <div class="order-info-left">
                         <div>
                             <label for="Fio">Имя</label>
-                            <input type="text" name="Fio" id="fio" value="{{order.username}}">
+                            <input type="text" name="Fio" id="fio" value="{{order.fio}}">
                         </div>
                         <div>
                             <label for="Phone">Телефон</label>
-                            <input type="tel" name="Phone" id="phone" value="{{order.phone}}" pattern="(+7)[0-9]{10}" autocomplete="on" enterkeyhint="next"
+                            <input type="tel" name="Phone" id="phone" value="{{order.phone}}" pattern="(+7)[0-9]{10}"
+                                   autocomplete="on" enterkeyhint="next"
                                    maxlength="12" minlength="12">
                         </div>
                         <div>
@@ -71,13 +73,54 @@
                         </div>
                     </div>
                 </div>
+                {% else %}
+                <div class="order_info">
+                    <div class="order-info-left">
+                        <div>
+                            <label for="Fio">Имя</label>
+                            <input type="text" name="Fio" id="fio" value="{{order.fio}}" readonly>
+                        </div>
+                        <div>
+                            <label for="Phone">Телефон</label>
+                            <input type="tel" name="Phone" id="phone" value="{{order.phone}}" pattern="(+7)[0-9]{10}"
+                                   autocomplete="on" enterkeyhint="next"
+                                   maxlength="12" minlength="12" readonly>
+                        </div>
+                        <div>
+                            <label for="Email">Email</label>
+                            <input type="email" name="Email" id="email" value="{{order.email}}" readonly>
+                        </div>
+                    </div>
+                    <div class="order-info-right">
+                        <div>
+                            <label for="Address">Адрес</label>
+                            <input type="text" name="Address" id="address" value="{{order.address}}" readonly>
+                        </div>
+                        <div>
+                            <label for="Datetime">Дата доставки</label>
+                            <input type="date" name="Datetime" id="datetime" value="{{order.datetime}}" readonly>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if order.status_id in [1, 2, 3] %}
                 <div class="formButtons">
                     <input type='button' value="Подтвердить изменения"
                            onclick="submitOrderForm({{order.order_id}})">
                 </div>
+                {% endif %}
             </div>
             <div class="right">
                 <h3>Позиции</h3>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <ul class="error-messages">
+                    {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
                 <div class="positions">
                     <div class="position">
                         <div class="idColumn">
@@ -97,6 +140,7 @@
                         </div>
                     </div>
                     {% for position in order.positions %}
+                    {% if order.status_id == 1 %}
                     <div class="position">
                         <div class="idColumn">
                             <input type="text" name="Id" id="{{position.id}}"
@@ -108,11 +152,12 @@
                         </div>
                         <div class="priceColumn">
                             <input type="number" name="Price" id="price{{position.id}}"
-                                   value="{{position.price}}" min="0" readonly>
+                                   value="{{position.price}}" readonly>
                         </div>
                         <div class="amountColumn">
                             <input type="number" name="Amount" id="amount{{position.id}}"
-                                   value="{{position.amount}}" min="0">
+                                   value="{{position.amount}}" min="1"
+                                   max="{{position.total_amount + position.amount}}">
                         </div>
                         <div class="removeColumn">
                             <input type="button" value="Удалить из заказа"
@@ -120,6 +165,27 @@
                                    style="color: red;">
                         </div>
                     </div>
+                    {% else %}
+                    <div class="position">
+                        <div class="idColumn">
+                            <input type="text" name="Id" id="{{position.id}}"
+                                   value="{{position.id}}" readonly>
+                        </div>
+                        <div class="nameColumn">
+                            <input type="text" name="Name" id="name{{position.id}}"
+                                   value="{{position.name}}" readonly>
+                        </div>
+                        <div class="priceColumn">
+                            <input type="number" name="Price" id="price{{position.id}}"
+                                   value="{{position.price}}" readonly>
+                        </div>
+                        <div class="amountColumn">
+                            <input type="number" name="Amount" id="amount{{position.id}}"
+                                   value="{{position.amount}}" readonly>
+                        </div>
+                    </div>
+
+                    {% endif %}
                     {% endfor %}
                 </div>
 

@@ -16,6 +16,11 @@ body.loaded {
     transition: opacity 0.2s ease-in;
 }
 
+.error {
+    font-size: 10px;
+    font-weight: 400;
+    color: red;
+}
 
 /* Стили для скрытия анимации загрузки после загрузки страницы */
 .loading-overlay {

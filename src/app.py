@@ -100,7 +100,6 @@ def categories_delete(category_id):
     if 'username' not in session:
         return redirect(url_for('login'))
 
-
     logger.debug(f"Removing categories with id: {category_id}")
     try:
         db.exec(f"DELETE FROM categories WHERE id={category_id};")
@@ -145,7 +144,6 @@ def products():
                            categories=categories_list,
                            products=products_list,
                            dollar=dollar)
-
 
 
 @app.route('/products/<product_id>/delete', methods=['DELETE'])
@@ -218,7 +216,6 @@ def orders():
 @logger.catch
 @app.route('/order/<int:order_id>', methods=['GET'])
 def order(order_id):
-
     if 'username' not in session:
         return redirect(url_for('login'))
 
@@ -228,6 +225,7 @@ def order(order_id):
         "cast(datetime as text), "
         "ose.id as status_id, "
         "ose.name as status_name, "
+        "u.fio, "
         "u.phone, "
         "u.email "
         "from orders o "
@@ -245,7 +243,8 @@ def order(order_id):
         "select p.id as id, "
         "p.name as name, "
         "p.price as price, "
-        "o.amount as amount "
+        "o.amount as amount, "
+        "p.amount as total_amount "
         "from orders o "
         "LEFT JOIN products p on p.id = o.position_id "
         f"WHERE order_id = {order_id} "
@@ -347,8 +346,10 @@ def order_update(order_id):
             new_pr_amount = pr_reply.pam - abs(o_delta)
             new_or_amount = pr_reply.oam + abs(o_delta)
             if new_pr_amount < 0:
-                logger.warning(f"Попытка списания товара #{pr_reply.opid}, которого не хватит на {pr_reply.pam}")
-                logger.debug(f"Остатки товара #{pr_reply.opid} изменены не будут")
+                message = (f"Попытка списания товара #{pr_reply.opid}, которого не хватит на {pr_reply.pam}\n "
+                           f"Остатки товара #{pr_reply.opid} изменены не будут")
+                flash(message, 'error')
+                logger.warning(message)
             else:
                 logger.debug(
                     f"Дополнительно списываю товар #{pr_reply.opid} в кол-ве {o_delta} шт по заказу №{order_id}")
