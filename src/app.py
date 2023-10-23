@@ -319,6 +319,9 @@ def order_update(order_id):
         else:
             logger.debug(f"Обновляю статус заказа [{order_mini_info.status_id} -> {data.status.id}]")
             db.exec(f"UPDATE orders SET status_id={data.status.id} WHERE order_id={order_id};")
+
+            if data.status.id == 5:
+                order_delete(order_id)
     else:
         logger.debug(f'Статус заказа не изменен: {order_mini_info.status_id} -> {data.status.id}')
 
