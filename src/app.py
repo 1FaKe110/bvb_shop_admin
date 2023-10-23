@@ -284,11 +284,12 @@ def order_delete(order_id):
                             "from orders o "
                             "inner join products p on p.id = o.position_id "
                             f"where order_id={order_id};")
+        logger.debug(f"Взял из бд [products] данные о товарах по заказу {order_id}")
         for item in item_list:
             total_amount = item.oam + item.pam
             db.exec(f"UPDATE products SET amount={total_amount} WHERE id={item.opid};")
 
-        logger.debug("вернул товары из удаленного заказа на полки")
+        logger.debug(f"вернул товары из заказа {order_id} на полки")
         return flask.Response(status=200)
     except Exception as ex_:
         logger.error(ex_)
