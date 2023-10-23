@@ -8,6 +8,7 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin_order_detailed.css') }}">
+    <meta http-equiv="refresh" content="60"> <!-- Обновление каждые 5 секунд -->
 </head>
 <body>
 <div class="top-panel">
@@ -29,7 +30,7 @@
                 <a class="nav-a" href="{{url_for('add_items')}}">Добавление новых данных</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('logout')}}">выход</a>
+                <a class="nav-a" href="{{url_for('logout')}}">Выход</a>
             </li>
         </ul>
     </nav>
@@ -135,9 +136,11 @@
                         <div class="amountColumn">
                             <input type="text" value="Кол-во в заказе" readonly>
                         </div>
+                        {% if order.status_id in [1, 2] %}
                         <div class="removeColumn">
                             <input type="text" value="кнопки" readonly>
                         </div>
+                        {% endif %}
                     </div>
                     {% for position in order.positions %}
                     {% if order.status_id == 1 %}
