@@ -181,6 +181,10 @@ def orders():
         "order by order_id asc",
         'fetchall')
 
+    if orders_list is None:
+        return render_template('orders.html',
+                               orders=None)
+
     for order_obj in orders_list:
         order_obj.datetime = order_obj.datetime[:10]
         order_obj.sum = 0
