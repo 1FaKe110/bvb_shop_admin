@@ -65,6 +65,9 @@ h3, input {
     box-shadow: 0px 6px 10px 2px rgb(229 229 229);
     transition: 0.2s all ease-in-out;
 }
+input#datetime {
+    width: 200px;
+}
 
 .position {
     width: 97%;
