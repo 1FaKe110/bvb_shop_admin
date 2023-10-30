@@ -41,6 +41,7 @@
     <input type="text" id="orderSearchInput"
            placeholder="Поиск по заказам"
            onkeyup="searchTable('orderTable', 'orderSearchInput')">
+    {% if orders %}
     <table id="orderTable">
         <thead>
         <tr>
@@ -53,7 +54,6 @@
 <!--            <th>Управление</th>-->
         </tr>
         </thead>
-        {% if orders %}
         {% for order in orders %}
         <form method="post" onblur="submitForm({{order.order_id}})" id="order_{{order.order_id}}">
             <tr>
@@ -90,10 +90,10 @@
             </tr>
         </form>
         {% endfor %}
-        {% else %}
-        <h5>Нет заказов</h5>
-        {% endif %}
     </table>
+    {% else %}
+    <h5 class="no-info">Нет заказов</h5>
+    {% endif %}
 </main>
 </body>
 <footer style="min-height: 200px;">
