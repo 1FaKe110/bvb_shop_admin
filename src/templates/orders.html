@@ -53,6 +53,7 @@
 <!--            <th>Управление</th>-->
         </tr>
         </thead>
+        {% if orders %}
         {% for order in orders %}
         <form method="post" onblur="submitForm({{order.order_id}})" id="order_{{order.order_id}}">
             <tr>
@@ -88,8 +89,10 @@
 <!--                </td>-->
             </tr>
         </form>
-
         {% endfor %}
+        {% else %}
+        <h5>Нет заказов</h5>
+        {% endif %}
     </table>
 </main>
 </body>
