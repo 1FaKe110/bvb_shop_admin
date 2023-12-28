@@ -15,22 +15,22 @@
     <nav class="nav-bar">
         <ul class="nav-ul">
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('categories')}}">Категории</a>
+                <a class="nav-a" href="{{url_for('admin_page.categories')}}">Категории</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('products')}}">Товары</a>
+                <a class="nav-a" href="{{url_for('admin_page.products')}}">Товары</a>
             </li>
             <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('orders')}}">Заказы</a>
+                <a class="nav-a" href="{{url_for('admin_page.orders')}}">Заказы</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('users')}}">Пользователи</a>
+                <a class="nav-a" href="{{url_for('admin_page.users')}}">Пользователи</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('add_items')}}">Добавление новых данных</a>
+                <a class="nav-a" href="{{url_for('admin_page.add_items')}}">Добавление новых данных</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('logout')}}">выход</a>
+                <a class="nav-a" href="{{url_for('admin_page.logout')}}">выход</a>
             </li>
         </ul>
     </nav>
@@ -58,10 +58,10 @@
         <form method="post" onblur="submitForm({{order.order_id}})" id="order_{{order.order_id}}">
             <tr>
                 <td>
-                    <a href="{{url_for('order', order_id=order.order_id)}}">
+                    <b><a href="{{url_for('admin_page.order', order_id=order.order_id)}}">
                         <input class="id_column" type="text" id="Id" name="id"
                            value="{{order.order_id}}" style="width: 40px" readonly>
-                    </a>
+                    </a></b>
                 </td>
                 <td>
                     <input type="text" id="sum_{{order.order_id}}" name="orderSum" value="{{order.sum}}"

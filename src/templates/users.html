@@ -14,22 +14,22 @@
     <nav class="nav-bar">
         <ul class="nav-ul">
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('categories')}}">Категории</a>
+                <a class="nav-a" href="{{url_for('admin_page.categories')}}">Категории</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('products')}}">Товары</a>
+                <a class="nav-a" href="{{url_for('admin_page.products')}}">Товары</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('orders')}}">Заказы</a>
+                <a class="nav-a" href="{{url_for('admin_page.orders')}}">Заказы</a>
             </li>
             <li class="nav-li-active">
-                <a class="nav-a" href="{{url_for('users')}}">Пользователи</a>
+                <a class="nav-a" href="{{url_for('admin_page.users')}}">Пользователи</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('add_items')}}">Добавление новых данных</a>
+                <a class="nav-a" href="{{url_for('admin_page.add_items')}}">Добавление новых данных</a>
             </li>
             <li class="nav-li">
-                <a class="nav-a" href="{{url_for('logout')}}">выход</a>
+                <a class="nav-a" href="{{url_for('admin_page.logout')}}">выход</a>
             </li>
         </ul>
     </nav>

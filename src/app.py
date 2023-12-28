@@ -2,7 +2,7 @@ import json
 import os
 
 import flask
-from flask import Flask, render_template, request, redirect, url_for, abort, session, flash
+from flask import Flask, render_template, request, redirect, url_for, abort, session, flash, Blueprint
 from werkzeug.security import check_password_hash
 from flask_cors import CORS
 from database import db
@@ -11,106 +11,73 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from background import Tasks
 from munch import DefaultMunch
 
+from repository.categories import Categories, categories_page
+from repository.login import Login, login_page
+from repository.logout import Logout, logout_page
+
 Tasks.update_dollar_course()
 as_class = DefaultMunch.fromDict
 app = Flask(__name__)
 app.secret_key = os.getenv('secret_key')  # секретный ключ для сессий
 CORS(app)
 
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if 'username' in session:
-        return redirect(url_for('index'))
-
-    """Обработчик для входа"""
-    if request.method == 'POST':
-        _login = request.form['username']
-        password = request.form["password"]
-
-        user_info = db.exec(f"Select phone, password, is_admin "
-                            f"from users "
-                            f"where login = '{_login}'", "fetchone")
-
-        if user_info is None:
-            logger.info('Пользователь не найден')
-            flash('Пользователь не найден', 'error')
-            return render_template('login.html')
-
-        if not check_password_hash(user_info.password, password):
-            logger.info('Не верный пароль')
-            flash('Не верный логин или пароль', 'error')
-            return render_template('login.html')
-
-        if not user_info.is_admin:
-            logger.info("Пользователь не является администратором")
-            flash('Пользователь не является администратором', 'error')
-
-        session['username'] = _login  # устанавливаем сессию
-        return redirect(url_for('orders'))
-
-    return render_template('login.html')
+# Создание Blueprint для страницы "admin"
+admin_page = Blueprint('admin_page', __name__)
+category_handler = Categories()
+login_handler = Login()
+logout_handler = Logout()
+product_handler = Products()
 
 
-@app.route('/logout')
-def logout():
-    """Выход из личного кабинета"""
-    session.pop('username', None)
-    return redirect(url_for('login'))
-
-
-@logger.catch
-@app.route('/')
+@admin_page.route('/')
 def index():
     logger.debug(session)
     if 'username' not in session:
-        return redirect(url_for('login'))
-    return redirect(url_for('categories'))
+        return redirect(url_for('admin_page.login'))
+    return redirect(url_for('admin_page.categories'))
 
+
+@admin_page.route('/login', methods=['GET', 'POST'])
+def login():
+    match request.method:
+        case 'GET':
+            return login_handler.get(session)
+        case 'POST':
+            return login_handler.post(session)
+        case _:
+            return flask.Response(status=415)
+
+
+@admin_page.route('/logout')
+def logout():
+    """Выход из личного кабинета"""
+    logout_handler.get(session)
+
+
+#### КАТЕГОРИИ ####
 
 @logger.catch
-@app.route('/categories', methods=['GET', 'POST'])
+@admin_page.route('/categories', methods=['GET', 'POST'])
 def categories():
-    logger.debug(session)
-    if 'username' not in session:
-        return redirect(url_for('login'))
-
     match request.method:
+        case 'GET':
+            return category_handler.get(session)
         case 'POST':
-            form = as_class(request.form.to_dict())
-            logger.debug(form)
-
-            logger.debug('Меняем что-то в категориях')
-            ct_id = form.ct_id.replace('.', '')
-            ct_name = form.ct_name
-            ct_image_path = form.categoryImagePath
-            db.exec(f"UPDATE categories SET "
-                    f"name='{ct_name}', image_path='{ct_image_path}' "
-                    f"WHERE id={ct_id};")
-
-    categories_list = db.exec("Select * from categories order by id asc", 'fetchall')
-    return render_template('categories.html',
-                           categories=categories_list)
+            return category_handler.post(session)
+        case _:
+            return flask.Response(status=415)
 
 
-@app.route('/categories/<category_id>/delete', methods=['DELETE'])
+@admin_page.route('/categories/<category_id>/delete', methods=['DELETE'])
 def categories_delete(category_id):
     """Delete product from database"""
+    category_handler.delete(session, category_id)
 
-    if 'username' not in session:
-        return redirect(url_for('login'))
 
-    logger.debug(f"Removing categories with id: {category_id}")
-    try:
-        db.exec(f"DELETE FROM categories WHERE id={category_id};")
-        return flask.Response(status=200)
-    except Exception as ex_:
-        logger.error(ex_)
-        return flask.Response(status=500)
-
+#### Продукты ####
 
 @logger.catch
-@app.route('/products', methods=['GET', 'POST'])
+@admin_page.route('/products', methods=['GET', 'POST'])
 def products():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -146,7 +113,7 @@ def products():
                            dollar=dollar)
 
 
-@app.route('/products/<product_id>/delete', methods=['DELETE'])
+@admin_page.route('/products/<product_id>/delete', methods=['DELETE'])
 def products_delete(product_id):
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -160,9 +127,10 @@ def products_delete(product_id):
         logger.error(ex_)
         return flask.Response(status=500)
 
+### ЗАКАЗЫ ###
 
 @logger.catch
-@app.route('/orders', methods=['GET', 'POST'])
+@admin_page.route('/orders', methods=['GET', 'POST'])
 def orders():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -218,7 +186,7 @@ def orders():
 
 
 @logger.catch
-@app.route('/order/<int:order_id>', methods=['GET'])
+@admin_page.route('/order/<int:order_id>', methods=['GET'])
 def order(order_id):
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -273,7 +241,7 @@ def order(order_id):
                            order_statuses=order_statuses)
 
 
-@app.route('/order/<order_id>/delete', methods=['DELETE'])
+@admin_page.route('/order/<order_id>/delete', methods=['DELETE'])
 def order_delete(order_id):
     """Delete order from database"""
 
@@ -300,7 +268,7 @@ def order_delete(order_id):
         return flask.Response(status=500)
 
 
-@app.route('/order/<order_id>/update', methods=['POST'])
+@admin_page.route('/order/<order_id>/update', methods=['POST'])
 def order_update(order_id):
     """update order in database"""
 
@@ -382,7 +350,7 @@ def update_order_and_product_rests(new_or_amount, new_pr_amount, pr_reply):
 
 
 @logger.catch
-@app.route('/order/<order_id>/delete/<item_id>', methods=['DELETE'])
+@admin_page.route('/order/<order_id>/delete/<item_id>', methods=['DELETE'])
 def order_delete_item(order_id, item_id):
     """Delete order from database"""
 
@@ -410,8 +378,10 @@ def order_delete_item(order_id, item_id):
         return flask.Response(status=500)
 
 
+### ПОЛЬЗОВАТЕЛИ ###
+
 @logger.catch
-@app.route('/users', methods=['GET', 'POST'])
+@admin_page.route('/users', methods=['GET', 'POST'])
 def users():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -420,7 +390,7 @@ def users():
     # return render_template('users.html')
 
 
-@app.route('/users/delete/<users_id>', methods=['DELETE'])
+@admin_page.route('/users/delete/<users_id>', methods=['DELETE'])
 def users_delete(users_id):
     """Delete order from database"""
 
@@ -436,8 +406,10 @@ def users_delete(users_id):
         return flask.Response(status=500)
 
 
+### Добавление новых данных ####
+
 @logger.catch
-@app.route('/add_items', methods=['GET', 'POST'])
+@admin_page.route('/add_items', methods=['GET', 'POST'])
 def add_items():
     if 'username' not in session:
         return redirect(url_for('login'))
@@ -489,19 +461,19 @@ def add_items():
                            dollar=dollar)
 
 
-@app.errorhandler(404)
+@admin_page.errorhandler(404)
 def page_not_found(error):
     """Страница 'страница не найдена'"""
     return render_template('404.html'), 404
 
 
-@app.errorhandler(500)
+@admin_page.errorhandler(500)
 def error_page(error):
     """Страница 'страница не найдена'"""
     return render_template('500.html'), 500
 
 
-@app.route('/error_500')
+@admin_page.route('/error_500')
 def nonexistent_page():
     """Пример эндпоинта, которого нет"""
     # Генерируем ошибку 404 "Страница не найдена"
@@ -512,15 +484,14 @@ def main():
     scheduler = BackgroundScheduler()
     scheduler.add_job(Tasks.update_dollar_course, 'interval', hours=24)
     scheduler.start()
-    try:
-        app.run(host='0.0.0.0', port=1112, debug=True)
-    except KeyboardInterrupt:
-        pass
-    except Exception as ex:
-        logger.error(ex)
-    finally:
-        logger.debug("scheduler: shutdown")
-        scheduler.shutdown()
+    app.register_blueprint(admin_page, url_prefix='/')
+    app.register_blueprint(login_page, url_prefix='/login')
+    app.register_blueprint(logout_page, url_prefix='/logout')
+    app.register_blueprint(categories_page, url_prefix='/categories')
+    app.register_blueprint(products_page, url_prefix='/products')
+    # app.register_blueprint(orders_page, url_prefix='/orders')
+    # app.register_blueprint(order_detailed_page, url_prefix='/order')
+    app.run(host='0.0.0.0', port=1112, debug=True)
 
 
 if __name__ == '__main__':
