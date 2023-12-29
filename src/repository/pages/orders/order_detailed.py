@@ -4,7 +4,7 @@ import flask
 from flask import redirect, url_for, render_template, request, Blueprint, flash
 from loguru import logger
 from database import db
-from repository.orders import Orders
+from repository.pages.orders import Orders
 from repository.sql import DbQueries
 from munch import DefaultMunch
 

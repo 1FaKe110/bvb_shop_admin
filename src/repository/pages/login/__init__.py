@@ -54,4 +54,4 @@ class Login:
             return render_template('login.html')
 
         session['username'] = _login  # устанавливаем сессию
-        return redirect(url_for('admin_page.orders'))
+        return redirect(url_for('admin_page.products'))
