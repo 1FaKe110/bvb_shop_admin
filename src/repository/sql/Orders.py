@@ -2,6 +2,21 @@ class Orders:
     class Select:
 
         @staticmethod
+        def list_all():
+            return ("select distinct(o.order_id), "
+                    "o.status_id, o.address, "
+                    "cast(cast(o.datetime as date) as text), "
+                    "cast(cast(o.creation_time as date) as text), "
+                    "ose.id as status_id, "
+                    "ose.name, temp.total_sum as position_total_sum "
+                    "from orders o inner join order_status ose on ose.id = o.status_id "
+                    "inner join ( "
+                    "select order_id, SUM(position_price * amount) as total_sum "
+                    "from orders "
+                    "group by order_id ) as temp on temp.order_id = o.order_id "
+                    "order by o.order_id asc;")
+
+        @staticmethod
         def user_info():
             return ("Select distinct(order_id), user_id, status_id, "
                     "address, cast(datetime as text), "

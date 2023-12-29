@@ -22,6 +22,7 @@ class Orders:
             return redirect(url_for('admin_page.login'))
 
     def get(self, session):
+        # переделать, чтобы быстрее грузилось, убрать лишнюю информацию в селекте
         self.check_login(session)
         orders_list = db.exec(
             DbQueries.orders.Select.user_info(),
@@ -32,25 +33,14 @@ class Orders:
             return render_template('orders.html',
                                    orders=None)
 
-        for order_obj in orders_list:
-            order_obj.datetime = order_obj.datetime[:10]
-            order_obj.sum = 0
+        orders = db.exec(
+            DbQueries.orders.Select.list_all(),
+            'fetchall'
+        )
 
-            order_adds = db.exec(
-                DbQueries.orders.Select.user_info_by_order_id(order_obj.order_id),
-                'fetchone'
-            )
-            order_obj |= order_adds
-            order_obj.positions = db.exec(
-                DbQueries.orders.Select.positions_by_order_id(order_obj.order_id),
-                "fetchall"
-            )
-            for position in order_obj.positions:
-                order_obj.sum += position.price * position.amount
-
-        logger.debug(json.dumps(orders_list, ensure_ascii=False, indent=2))
+        logger.debug(json.dumps(orders, ensure_ascii=False, indent=2))
         return render_template('orders.html',
-                               orders=orders_list)
+                               orders=orders)
 
     def delete(self, session, order_id):
         """Delete order from database"""
