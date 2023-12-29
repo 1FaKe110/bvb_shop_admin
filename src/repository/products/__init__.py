@@ -48,7 +48,7 @@ class Products:
         db.exec(
             DbQueries.products.Update.by_id(form)
         )
-        self.get(session)
+        return self.get(session)
 
     def delete(self, session, product_id):
         self.check_login(session)

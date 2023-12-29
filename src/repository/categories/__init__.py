@@ -44,7 +44,7 @@ class Categories:
             DbQueries.categories.Update.name_and_image_by_id(ct_name, ct_image_path, ct_id)
         )
 
-        self.get(session)
+        return self.get(session)
 
     def delete(self, session, category_id):
         self.check_login(session)

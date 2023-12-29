@@ -17,8 +17,8 @@ class Login:
     @staticmethod
     def check_login(session):
         logger.debug(session)
-        if 'username' not in session:
-            return redirect(url_for('admin_page.index'))
+        if 'username' in session:
+            return redirect(url_for('admin_page.categories'))
 
         logger.debug("Пользователь не авторизован, возвращаю страницу логина")
         return
@@ -51,6 +51,7 @@ class Login:
         if not user_info.is_admin:
             logger.info("Пользователь не является администратором")
             flash('Пользователь не является администратором', 'error')
+            return render_template('login.html')
 
         session['username'] = _login  # устанавливаем сессию
         return redirect(url_for('admin_page.orders'))
