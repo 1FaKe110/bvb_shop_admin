@@ -1,4 +1,3 @@
-import flask
 from flask import redirect, url_for, render_template, request, Blueprint, flash
 from loguru import logger
 from werkzeug.security import check_password_hash
@@ -55,4 +54,3 @@ class Login:
 
         session['username'] = _login  # устанавливаем сессию
         return redirect(url_for('admin_page.orders'))
-

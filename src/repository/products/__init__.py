@@ -45,18 +45,17 @@ class Products:
         form = as_class(request.form.to_dict())
         logger.debug('Меняем что-то в продуктах')
         logger.debug(json.dumps(form, indent=2, ensure_ascii=False))
-        db.exec(DbQueries.products.Update.by_id(form))
+        db.exec(
+            DbQueries.products.Update.by_id(form)
+        )
         self.get(session)
 
-
-
-    def delete(self, session, category_id):
+    def delete(self, session, product_id):
         self.check_login(session)
-
-        logger.debug(f"Удаляю категорию с id: {category_id}")
+        logger.debug(f"Удаляю товар с id: {product_id}")
         try:
             db.exec(
-                DbQueries.categories.Delete.by_id(category_id)
+                DbQueries.products.Delete.by_id(product_id)
             )
             return flask.Response(status=200)
         except Exception as ex_:

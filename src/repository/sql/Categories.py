@@ -6,6 +6,15 @@ class Categories:
                     "from categories "
                     "order by id asc")
 
+    class Insert:
+
+        @staticmethod
+        def new_category(form):
+            return ("INSERT INTO categories "
+                    "(parent_id, name, image_path) "
+                    f"VALUES"
+                    f"({form.categoryParentId}, '{form.categoryName}', '{form.productImagePath}');")
+
     class Update:
 
         @staticmethod

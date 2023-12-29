@@ -3,10 +3,21 @@ class Users:
         pass
 
     class Update:
-        pass
+
+        @staticmethod
+        def username_by_user_id(user_data, user_id):
+            return (f"UPDATE public.users "
+                    f"SET username='{user_data.fio}', "
+                    f"phone='{user_data.phone}', "
+                    f"email='{user_data.email}' "
+                    f"WHERE id={user_id};")
 
     class Delete:
-        pass
+
+        @staticmethod
+        def by_user_id(user_id):
+            return (f"DELETE FROM users_new "
+                    f"WHERE user_id={user_id};")
 
 
 class UsersAdmin:

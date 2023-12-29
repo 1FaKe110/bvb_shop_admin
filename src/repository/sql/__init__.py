@@ -1,3 +1,4 @@
+from repository.sql.Orders import Orders
 from repository.sql.Categories import Categories
 from repository.sql.Users import Users, UsersAdmin
 from repository.sql.Products import Products
@@ -11,5 +12,4 @@ class DbQueries:
     adminUsers = UsersAdmin
     products = Products
     dollar = Dollar
-    # orders = Orders
-
+    orders = Orders
