@@ -22,21 +22,14 @@ class Orders:
             return redirect(url_for('admin_page.login'))
 
     def get(self, session):
-        # переделать, чтобы быстрее грузилось, убрать лишнюю информацию в селекте
         self.check_login(session)
-        orders_list = db.exec(
-            DbQueries.orders.Select.user_info(),
-            'fetchall'
-        )
-
-        if orders_list is None:
-            return render_template('orders.html',
-                                   orders=None)
-
         orders = db.exec(
             DbQueries.orders.Select.list_all(),
             'fetchall'
         )
+        if orders is None:
+            return render_template('orders.html',
+                                   orders=None)
 
         logger.debug(json.dumps(orders, ensure_ascii=False, indent=2))
         return render_template('orders.html',
